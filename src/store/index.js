@@ -63,8 +63,11 @@ export default new Vuex.Store({
       state.temp.name = payload.name;
     },
     addProfile(state, payload) {
-      let str = `state.gallerys.${payload.name}.push(payload.link)`;
-      eval(str);
+      let name = payload.name
+      if(name == 'NaYeon' || name == 'SeulGi' || name == 'YooA' || name == 'IU') {
+        let str = `state.gallerys.${payload.name}.push(payload.link)`;
+        eval(str);
+      }
     }
   },
   actions: {
