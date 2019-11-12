@@ -3,21 +3,16 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
-const Home = () => import(/* webpackChunkName: "home" */ '@/components/content/MainContent.vue')
-const Profile = () => import(/* webpackChunkName: "profile" */ '@/components/content/Profile.vue')
-const Gallery = () => import(/* webpackChunkName: "gallery" */ '@/components/content/Gallery.vue')
-const Edit = () => import(/* webpackChunkName: "edit" */ '@/components/content/Edit.vue')
-const Check = () => import(/*webpackChunkName: "check" */ '@/components/content/Check.vue')
+const Home = () => import(/* webpackChunkName: "home" */ '@/components/content/main/MainContent.vue')
+const Profile = () => import(/* webpackChunkName: "profile" */ '@/components/content/profile/Profile.vue')
+const Gallery = () => import(/* webpackChunkName: "gallery" */ '@/components/content/gallery/Gallery.vue')
+const Edit = () => import(/* webpackChunkName: "edit" */ '@/components/content/gallery/Edit.vue')
+const Check = () => import(/*webpackChunkName: "check" */ '@/components/content/gallery/Check.vue')
 const routes = [
   {
     path: '/',
     name: 'home',
     component: Home
-  },
-  {
-    path: '/about',
-    name: 'about',
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
   {
     path: '/profile',

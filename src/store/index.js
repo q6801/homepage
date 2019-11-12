@@ -6,10 +6,10 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
       thumbSrc: {
-        IU: { name:'IU', source: require('@/assets/thumb/ThumbIU.jpg')},
-        NaYeon: { name:'NaYeon', source: require('@/assets/thumb/ThumbNaYeon.jpg')},
-        SeulGi: { name:'SeulGi', source: require('@/assets/thumb/ThumbSeulGi.jpg')},
-        YooA: { name:'YooA', source: require('@/assets/thumb/ThumbYooA.jpg')}
+        IU: { name:'IU', source: require('@/assets/img/thumb/ThumbIU.jpg')},
+        NaYeon: { name:'NaYeon', source: require('@/assets/img/thumb/ThumbNaYeon.jpg')},
+        SeulGi: { name:'SeulGi', source: require('@/assets/img/thumb/ThumbSeulGi.jpg')},
+        YooA: { name:'YooA', source: require('@/assets/img/thumb/ThumbYooA.jpg')}
       },
       profile: {
         IU: { name: 'IU(이지은)', birth: '1993년 5월 16일 (26세)', interview: "신뢰가 가는 사람이 되고 싶어요. 종종 그런 사람이 있잖아요.\

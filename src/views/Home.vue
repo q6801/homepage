@@ -12,8 +12,8 @@
 
 <script>
 // @ is an alias to /src
-import NavContent from '@/components/NavContent.vue'
-import FooterContent from '@/components/FooterContent.vue'
+import NavContent from '@/components/content/main/NavContent.vue'
+import FooterContent from '@/components/content/main/FooterContent.vue'
 
 export default {
   components: {

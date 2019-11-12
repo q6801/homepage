@@ -5,7 +5,7 @@
         <profileImages></profileImages>
       </div>
       <div class="col-sm-6">
-        <img :src="profileImages" alt="@/assets/profile/ProfileIU.jpg" class="img-profile mw-100">
+        <img :src="profileImages" alt="@/assets/img/profile/ProfileIU.jpg" class="img-profile mw-100">
       </div>
       <div class="col-sm-3">
         <h3 class="mb-5">이름: {{profiles.name}}</h3>
@@ -26,7 +26,7 @@ export default {
   },
   computed: {
     profileImages: function() {
-      return  require(`@/assets/profile/Profile${this.$route.query.profile}.jpg`)
+      return  require(`@/assets/img/profile/Profile${this.$route.query.profile}.jpg`)
     },
     profiles: function() {
       return eval(`this.$store.state.profile.${this.$route.query.profile}`)
