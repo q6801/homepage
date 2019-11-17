@@ -8,6 +8,8 @@ const Profile = () => import(/* webpackChunkName: "profile" */ '@/components/con
 const Gallery = () => import(/* webpackChunkName: "gallery" */ '@/components/content/gallery/Gallery.vue')
 const Edit = () => import(/* webpackChunkName: "edit" */ '@/components/content/gallery/Edit.vue')
 const Check = () => import(/*webpackChunkName: "check" */ '@/components/content/gallery/Check.vue')
+const Screen = () => import(/*webpackChunckName: "calendar" */ '@/components/content/calendar/Screen.vue')
+
 const routes = [
   {
     path: '/',
@@ -35,6 +37,11 @@ const routes = [
         component: Check
       }
     ]
+  },
+  {
+    path: '/screen',
+    name: 'screen',
+    component: Screen
   }
 ]
 
