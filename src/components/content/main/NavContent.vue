@@ -11,7 +11,7 @@
               <router-link :to="{ name: 'gallery'}">gallery</router-link>
             </li>
             <li class="nav-item mr-3">
-              <a class="nav-link" href="#">community</a>
+              <router-link :to="{ name: 'screen'}">calendar</router-link>
             </li>
           </ul>
       </div>

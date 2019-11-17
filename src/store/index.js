@@ -23,34 +23,34 @@ export default new Vuex.Store({
         YooA: {name: '유시아', birth: '1995년 9월 17일 (24세)', interview: "무대 위에 섰을 때 행복을 느끼는 사람이다. 내가 맡은 파트 만큼은 꼭 해내고 싶다"}
       },
       gallerys: {
-        IU: [
+        IU: {name: 'IU', photos: [
           "https://i.pinimg.com/236x/80/f7/9f/80f79f98e955c1852ec0fd3bb2bc1499.jpg",
           "https://i.pinimg.com/236x/6b/53/da/6b53da9cb2ce5d8b3a403e631b88538b.jpg",
           "https://i.pinimg.com/236x/b4/ec/20/b4ec203cbf75b42110a1092dd7cac053.jpg",
           "https://i.pinimg.com/236x/4b/8b/72/4b8b72bf9718b7211afdb7096b8343fe.jpg",
           "https://i.pinimg.com/236x/11/e4/11/11e411eb32335070ca9b2b7aaa921bb8.jpg"
-        ],
-        NaYeon: [
+        ]},
+        NaYeon: {name: 'NaYeon', photos: [
           "https://i.pinimg.com/236x/95/b1/f1/95b1f1169f45fb9454c8ac475262c5a7.jpg",
           "https://i.pinimg.com/236x/5b/69/c4/5b69c444c63ff2e6183615cb2cae8c18.jpg",
           "https://i.pinimg.com/236x/55/cc/e7/55cce77d3675a5a147c18b9a6d5d660e.jpg",
           "https://i.pinimg.com/236x/73/eb/1c/73eb1c61f79c71386a664c5914ba9905.jpg",
           "https://i.pinimg.com/236x/c0/a8/dd/c0a8dd8d05718ad9ea61e8fc67d55cf3.jpg"
-        ],
-        SeulGi: [
+        ]},
+        SeulGi: {name: 'SeulGi', photos: [
           "https://i.pinimg.com/236x/7b/46/74/7b467400df8636cffc2dcb4bf36e51ed.jpg",
           "https://i.pinimg.com/236x/8b/d2/7e/8bd27e043b72d9124c4d6940caf1a8aa.jpg",
           "https://i.pinimg.com/236x/f9/b6/5c/f9b65cb55ba8064945dc00a8a4175425.jpg",
           "https://i.pinimg.com/236x/23/21/c2/2321c255df55615ea54a8c369e14ea20.jpg",
           "https://i.pinimg.com/236x/6e/33/d8/6e33d8a26dbffebc6cf88ed460e3d73a.jpg",
-        ],
-        YooA: [
+        ]},
+        YooA: {name: 'YooA', photos: [
           "https://i.pinimg.com/236x/bc/a3/0a/bca30a605b64abe7d4c1a8f57a7b8191.jpg",
           "https://i.pinimg.com/236x/4b/b2/89/4bb289173150db388e8ca304d15c302f.jpg",
           "https://i.pinimg.com/236x/94/03/fb/9403fb2b33ea764d23ac734c93ae9d50.jpg",
           "https://i.pinimg.com/236x/c3/06/f6/c306f6edba78844713b8ce455095f3f5.jpg",
           "https://i.pinimg.com/236x/14/75/a1/1475a19d24aa8f0991da09dedc1df1c6.jpg"
-        ]
+        ]}
       },
       temp: {
         link:null,
@@ -64,9 +64,12 @@ export default new Vuex.Store({
     },
     addProfile(state, payload) {
       let name = payload.name
-      if(name == 'NaYeon' || name == 'SeulGi' || name == 'YooA' || name == 'IU') {
-        let str = `state.gallerys.${payload.name}.push(payload.link)`;
-        eval(str);
+      let girl
+      for (girl in state.gallerys) {
+        if(name == girl) {
+          let str = `state.gallerys.${payload.name}.photos.push(payload.link)`;
+          eval(str);
+        }
       }
     }
   },

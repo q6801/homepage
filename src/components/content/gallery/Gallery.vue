@@ -12,8 +12,8 @@
     </div>
     <div class="row">
       <div class="col-md-3 col-6" v-for="gallery in $store.state.gallerys">
-        <div class="" v-for="picture in gallery">
-          <img :src="picture" alt="" class="rounded mb-4 mw-100 picture" >
+        <div class="" v-for="picture in gallery.photos">
+          <img :src="picture" alt="" class="rounded mb-4 mw-100 picture">
         </div>
       </div>
     </div>
@@ -34,9 +34,6 @@ export default {
     Edit
   },
   methods: {
-    changeOpacity: function() {
-      this.hi = "hello"
-    }
   }
 }
 </script>
