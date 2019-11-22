@@ -3,8 +3,7 @@
     <calendar
       :value='calendar1.value'
       :range='calendar1.range'
-      :begin='calendar1.begin'
-      :end='calendar1.end'
+      :rangeValue='calendar1.rangeValue'
     ></calendar>
   </div>
 </template>
@@ -16,6 +15,8 @@ export default {
     return {
       calendar1:{
         value: [2019,11,17],
+        range: true,
+        rangeValue: [[2019,11,4], [2019,11,8]]
       },
     }
   },

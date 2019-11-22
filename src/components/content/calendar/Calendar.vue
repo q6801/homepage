@@ -8,7 +8,7 @@
       </div>
       <div class="year">{{year}}</div>
     </div>
-    <table>
+    <table class="table">
       <thead cellpadding="30">
         <tr>
           <td v-for="week in weeks"><h1>{{week}}</h1></td>
@@ -17,12 +17,20 @@
       <tbody>
         <tr v-for="day in days">
           <td v-for="child in day" @click="hello"
-            :class="{'font-weight-light':child.disabled, 'font-weight-bolder':!child.disabled, 'selected':child.selected}">
+            :class="{'font-weight-light':child.disabled,
+                    'font-weight-bolder':!child.disabled,
+                    'selected':child.selected,
+                    'text-primary':child.today,
+                    'text-primary':child.rangeSelected
+              }">
             {{child.day}}
           </td>
         </tr>
       </tbody>
     </table>
+    <div class="">
+      {{today}}
+    </div>
     <button type="button" name="button" class="btn btn-primary" @click="prev">왼쪽</button>
     <button type="button" name="button" class="btn btn-primary" @click="next">오른쪽</button>
   </div>
@@ -36,6 +44,12 @@ export default {
         default: false
     },
     value: {
+        type: Array,
+        default: function(){
+            return []
+        }
+    },
+    rangeValue: {
         type: Array,
         default: function(){
             return []
@@ -105,21 +119,22 @@ export default {
       console.log('hi')
     },
     init() {
-        let now = new Date();
+        let now = new Date()
         this.year = now.getFullYear()
         let hello = this.year
         console.log(hello)
         this.month = now.getMonth()
         this.day = now.getDate()
+
         if (this.value.length>0) {
             if (this.range) {
-                this.year = parseInt(this.value[0][0])
-                this.month = parseInt(this.value[0][1]) - 1 // 0이 1월
-                this.day = parseInt(this.value[0][2])
+                this.year = parseInt(this.rangeValue[0][0])
+                this.month = parseInt(this.rangeValue[0][1]) - 1 // 0이 1월
+                this.day = parseInt(this.rangeValue[0][2])
 
-                let year2 = parseInt(this.value[1][0])
-                let month2 = parseInt(this.value[1][1]) - 1
-                let day2 = parseInt(this.value[1][2])
+                let year2 = parseInt(this.rangeValue[1][0])
+                let month2 = parseInt(this.rangeValue[1][1]) - 1
+                let day2 = parseInt(this.rangeValue[1][2])
 
                 this.rangeBegin = [this.year, this.month,this.day]
                 this.rangeEnd = [year2, month2 , day2]
@@ -129,15 +144,18 @@ export default {
                 this.day = parseInt(this.value[2])
             }
         }
+        console.log(this.rangeBegin, this.rangeEnd)
         this.render(this.year, this.month)
     },
     render(y, m) {
+      let now = new Date();
+      this.today = [now.getFullYear(), now.getMonth()+1, now.getDate()]
       let firstDayOfMonth = new Date(y, m, 1).getDay()
       let lastDateOfMonth = new Date(y, m + 1, 0).getDate()
       let lastDayOfLastMonth = new Date(y, m, 0).getDate()
       let i, temp = [], line=0
       let seletSplit = this.value
-      for(i = 1; i <= lastDateOfMonth; i++) {
+      for(i = 1; i <= lastDateOfMonth; i++) {       // 이번 달이 아닌 지난 날들의 마지막 일들
         let day = new Date(y, m, i).getDay()
         let k
 
@@ -152,23 +170,37 @@ export default {
             k++;
           }
         }
-        if(seletSplit[0] === y && seletSplit[1]-1 === m && seletSplit[2] === i) {
-          temp[line].push({day: i, selected: true})
+        if(this.range) {
+          let beginTime = Number(new Date(this.rangeBegin[0], this.rangeBegin[1], this.rangeBegin[2]))
+          let endTime = Number(new Date(this.rangeEnd[0], this.rangeEnd[1], this.rangeEnd[2]))
+          let stepTime = Number(new Date(this.year, this.month, i))
+          let options = {day: i}
+          if(beginTime <= stepTime && stepTime <= endTime ) {
+            options.rangeSelected = true
+          }
+          temp[line].push(options)
         }
         else {
-          if(i == lastDateOfMonth && day != 6) {
-            let lastDay = new Date(y, m+1, 0).getDay()
-            let k = 1
-            temp[line].push({day: i, disabled: false})
-            for(let j = lastDay; j < 6; j++) {
-              temp[line].push({day: k, disabled: true})
-              k++
-            }
-          } else {
+          if(seletSplit[0] === y && seletSplit[1]-1 === m && seletSplit[2] === i) {   // 선택된 날들이거나
+            temp[line].push({day: i, selected: true})
+          }
+          else if(this.today[0] === y && this.today[1]-1 === m && this.today[2] === i) {    // 오늘이거나
+            temp[line].push({day: i, today: true})
+          }
+          else {
+            if(i == lastDateOfMonth && day != 6) {                                          // 이번달의 마지막이거나
+              let lastDay = new Date(y, m+1, 0).getDay()
+              let k = 1
               temp[line].push({day: i, disabled: false})
+              for(let j = lastDay; j < 6; j++) {
+                temp[line].push({day: k, disabled: true})
+                k++
+              }
+            } else {                                                                      // 평범한 날이거나
+                temp[line].push({day: i, disabled: false})
+            }
           }
         }
-
     }
     this.days = temp
   },
