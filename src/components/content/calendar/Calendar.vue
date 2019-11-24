@@ -16,7 +16,7 @@
       </thead>
       <tbody>
         <tr v-for="day in days">
-          <td v-for="child in day" @click="hello"
+          <td v-for="child in day"
             class="table-data"
             :class="{'font-weight-light':child.disabled,
                     'font-weight-bolder':!child.disabled,
@@ -27,6 +27,7 @@
                 <div class="col-12">
                     {{child.day}}
                 </div>
+                <div class="col-12 mb-1 schedule" v-html="child.view"></div>
                 <div class="col-12 mb-1 schedule" :class="{'paint': child.range0Selected}"></div>
                 <div class="col-12 mb-1 schedule" :class="{'paint': child.range1Selected}"></div>
                 <div class="col-12 mb-1 schedule" :class="{'paint': child.range2Selected}"></div>
@@ -46,20 +47,10 @@
 <script>
 export default {
   props: {
-    range:{
-        type: Boolean,
-        default: false
-    },
-    value: {
+    total:{
         type: Array,
-        default: function(){
-            return []
-        }
-    },
-    rangeValue: {
-        type: Array,
-        default: function(){
-            return []
+        default: function() {
+          return []
         }
     },
     begin:  {
@@ -106,48 +97,71 @@ export default {
         rangeBegin:[],
         rangeEnd:[],
         hi: 0,
-        lastOverlap: [-1]
+        lastOverlap: [-1],
+        value: [],
+        range: false,
+        name: ''
     }
   },
   watch:{
       events(){
           this.render(this.year,this.month)
       },
-      value(){
-          this.init()
-      },
+      // value(){
+      //     this.init()
+      // },
 
   },
   mounted() {
     this.init()
   },
   methods: {
-    hello() {
-      console.log('hi')
-    },
     init() {
         let now = new Date()
         this.year = now.getFullYear()
-        let hello = this.year
         this.month = now.getMonth()
         this.day = now.getDate()
 
-        if (this.value.length>0) {
-            if (this.range) {
-                this.rangeValue.forEach((value) => {
-                  let year1 = parseInt(value[0][0])
-                  let month1 = parseInt(value[0][1]) - 1 // 0이 1월
-                  let day1 = parseInt(value[0][2])
 
-                  let year2 = parseInt(value[1][0])
-                  let month2 = parseInt(value[1][1]) - 1
-                  let day2 = parseInt(value[1][2])
+        let i = 0
+        this.total.forEach(element => {
+            if(element.value.length == 2) {
+                let year1 = parseInt(element.value[0][0])
+                let month1 = parseInt(element.value[0][1]) - 1 // 0이 1월
+                let day1 = parseInt(element.value[0][2])
 
-                  this.rangeBegin.push([year1, month1, day1])
-                  this.rangeEnd.push([year2, month2 , day2])
-                })
+                let year2 = parseInt(element.value[1][0])
+                let month2 = parseInt(element.value[1][1]) - 1
+                let day2 = parseInt(element.value[1][2])
+
+                this.rangeBegin.push([year1, month1, day1, i])
+                this.rangeEnd.push([year2, month2 , day2, i])
             }
-        }
+            else {
+              let temp = element.value
+              temp.push(i)
+              this.value.push(element.value)
+            }
+            ++i
+        })
+
+        // if (this.value.length>0) {
+        //     if (this.range) {
+        //         this.value.forEach((value) => {
+        //           let year1 = parseInt(value[0][0])
+        //           let month1 = parseInt(value[0][1]) - 1 // 0이 1월
+        //           let day1 = parseInt(value[0][2])
+        //
+        //           let year2 = parseInt(value[1][0])
+        //           let month2 = parseInt(value[1][1]) - 1
+        //           let day2 = parseInt(value[1][2])
+        //
+        //           this.rangeBegin.push([year1, month1, day1])
+        //           this.rangeEnd.push([year2, month2 , day2])
+        //         })
+        //     }
+        //
+        // }
         this.render(this.year, this.month)
     },
     render(y, m) {
@@ -160,7 +174,8 @@ export default {
       let seletSplit = this.value
       let beginTime=[], endTime=[]
 
-      for(let k=0; k<this.rangeValue.length; k++) {
+
+      for(let k=0; k<this.rangeBegin.length; k++) {
         beginTime.push(Number(new Date(this.rangeBegin[k][0], this.rangeBegin[k][1], this.rangeBegin[k][2])))
         endTime.push(Number(new Date(this.rangeEnd[k][0], this.rangeEnd[k][1], this.rangeEnd[k][2])))
       }
@@ -182,14 +197,14 @@ export default {
           }
         }
 
-        if(this.range) {
+
           let stepTime = Number(new Date(this.year, this.month, i))
           let overlap = 0
           let some = false
           let num = 0
           currState = []
 
-          for(let k=0; k<this.rangeValue.length; k++) {
+          for(let k=0; k<this.rangeBegin.length; k++) {
             if(beginTime[k] <= stepTime && stepTime <= endTime[k] ) {
               eval(`options.range${overlap.toString()}Selected = true`)
               overlap++
@@ -200,7 +215,6 @@ export default {
             }
           }
           let sequence = false
-          console.log(this.lastOverlap, currState)
           currState.forEach(element => {
             for(let q=0; q<this.lastOverlap.length; q++) {
               if(element === this.lastOverlap[q]) {
@@ -226,11 +240,11 @@ export default {
               }
             })
           }
-      }
 
         for(let k = 0; k < seletSplit.length; k++) {
           if(seletSplit[k][0] === y && seletSplit[k][1]-1 === m && seletSplit[k][2] === i) {   // 선택된 날들이거나
             options.selected = true
+            options.view = this.total[seletSplit[k][3]].name
           }
         }
         if(this.today[0] === y && this.today[1]-1 === m && this.today[2] === i) {    // 오늘이거나

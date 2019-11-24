@@ -1,9 +1,7 @@
 <template lang="html">
   <div class="">
     <calendar
-      :value='calendar1.value'
-      :range='calendar1.range'
-      :rangeValue='calendar1.rangeValue'
+      :total='arr'
     ></calendar>
   </div>
 </template>
@@ -13,11 +11,26 @@ import calendar from '@/components/content/calendar/Calendar.vue'
 export default {
   data() {
     return {
-      calendar1:{
-        value: [[2019,11,17], [2019,11,18], [2019,10,1]],
-        range: true,
-        rangeValue: [[[2019,11,4], [2019,11,8]],[[2019,11,5], [2019,11,10]], [[2019,11,11], [2019,11,14]], [[2019,11,14], [2019,11,16]]]
-      },
+      arr:[
+        {
+          value: [2019,11,1],
+          name: '축제날'
+        },
+        {
+          value: [[2019,11,9], [2019,11,11]],
+        },
+        {
+          value: [[2019,11,10], [2019,11,12]],
+        },
+        {
+          value: [2019,11,8],
+          name: '시험데스'
+        },
+        {
+          value: [[2019,11,15], [2019,11,16]],
+        },
+
+          ]
     }
   },
   components: {
