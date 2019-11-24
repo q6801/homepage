@@ -11,19 +11,26 @@
     <table class="table">
       <thead cellpadding="30">
         <tr>
-          <td v-for="week in weeks"><h1>{{week}}</h1></td>
+          <td class="week-inner" v-for="week in weeks"><h1>{{week}}</h1></td>
         </tr>
       </thead>
       <tbody>
         <tr v-for="day in days">
           <td v-for="child in day" @click="hello"
+            class="table-data"
             :class="{'font-weight-light':child.disabled,
                     'font-weight-bolder':!child.disabled,
                     'selected':child.selected,
                     'text-primary':child.today,
-                    'text-primary':child.rangeSelected
               }">
-            {{child.day}}
+              <div class="row">
+                <div class="col-12">
+                    {{child.day}}
+                </div>
+                <div class="col-12 mb-1 schedule" :class="{'paint': child.range0Selected}"></div>
+                <div class="col-12 mb-1 schedule" :class="{'paint': child.range1Selected}"></div>
+                <div class="col-12 mb-1 schedule" :class="{'paint': child.range2Selected}"></div>
+              </div>
           </td>
         </tr>
       </tbody>
@@ -95,11 +102,11 @@ export default {
         month: 0,
         day: 0,
         days: [],
-        multiDays:[],
         today: [],
         rangeBegin:[],
         rangeEnd:[],
-        hi: 0
+        hi: 0,
+        lastOverlap: [-1]
     }
   },
   watch:{
@@ -122,29 +129,25 @@ export default {
         let now = new Date()
         this.year = now.getFullYear()
         let hello = this.year
-        console.log(hello)
         this.month = now.getMonth()
         this.day = now.getDate()
 
         if (this.value.length>0) {
             if (this.range) {
-                this.year = parseInt(this.rangeValue[0][0])
-                this.month = parseInt(this.rangeValue[0][1]) - 1 // 0이 1월
-                this.day = parseInt(this.rangeValue[0][2])
+                this.rangeValue.forEach((value) => {
+                  let year1 = parseInt(value[0][0])
+                  let month1 = parseInt(value[0][1]) - 1 // 0이 1월
+                  let day1 = parseInt(value[0][2])
 
-                let year2 = parseInt(this.rangeValue[1][0])
-                let month2 = parseInt(this.rangeValue[1][1]) - 1
-                let day2 = parseInt(this.rangeValue[1][2])
+                  let year2 = parseInt(value[1][0])
+                  let month2 = parseInt(value[1][1]) - 1
+                  let day2 = parseInt(value[1][2])
 
-                this.rangeBegin = [this.year, this.month,this.day]
-                this.rangeEnd = [year2, month2 , day2]
-            }else {
-                this.year = parseInt(this.value[0])
-                this.month = parseInt(this.value[1]) - 1
-                this.day = parseInt(this.value[2])
+                  this.rangeBegin.push([year1, month1, day1])
+                  this.rangeEnd.push([year2, month2 , day2])
+                })
             }
         }
-        console.log(this.rangeBegin, this.rangeEnd)
         this.render(this.year, this.month)
     },
     render(y, m) {
@@ -153,11 +156,19 @@ export default {
       let firstDayOfMonth = new Date(y, m, 1).getDay()
       let lastDateOfMonth = new Date(y, m + 1, 0).getDate()
       let lastDayOfLastMonth = new Date(y, m, 0).getDate()
-      let i, temp = [], line=0
+      let i, temp = [], line=0, currState = []
       let seletSplit = this.value
+      let beginTime=[], endTime=[]
+
+      for(let k=0; k<this.rangeValue.length; k++) {
+        beginTime.push(Number(new Date(this.rangeBegin[k][0], this.rangeBegin[k][1], this.rangeBegin[k][2])))
+        endTime.push(Number(new Date(this.rangeEnd[k][0], this.rangeEnd[k][1], this.rangeEnd[k][2])))
+      }
+
       for(i = 1; i <= lastDateOfMonth; i++) {       // 이번 달이 아닌 지난 날들의 마지막 일들
         let day = new Date(y, m, i).getDay()
         let k
+        let options = {day: i}
 
         if(day == 0) {
           line++;
@@ -170,36 +181,72 @@ export default {
             k++;
           }
         }
+
         if(this.range) {
-          let beginTime = Number(new Date(this.rangeBegin[0], this.rangeBegin[1], this.rangeBegin[2]))
-          let endTime = Number(new Date(this.rangeEnd[0], this.rangeEnd[1], this.rangeEnd[2]))
           let stepTime = Number(new Date(this.year, this.month, i))
-          let options = {day: i}
-          if(beginTime <= stepTime && stepTime <= endTime ) {
-            options.rangeSelected = true
-          }
-          temp[line].push(options)
-        }
-        else {
-          if(seletSplit[0] === y && seletSplit[1]-1 === m && seletSplit[2] === i) {   // 선택된 날들이거나
-            temp[line].push({day: i, selected: true})
-          }
-          else if(this.today[0] === y && this.today[1]-1 === m && this.today[2] === i) {    // 오늘이거나
-            temp[line].push({day: i, today: true})
-          }
-          else {
-            if(i == lastDateOfMonth && day != 6) {                                          // 이번달의 마지막이거나
-              let lastDay = new Date(y, m+1, 0).getDay()
-              let k = 1
-              temp[line].push({day: i, disabled: false})
-              for(let j = lastDay; j < 6; j++) {
-                temp[line].push({day: k, disabled: true})
-                k++
+          let overlap = 0
+          let some = false
+          let num = 0
+          currState = []
+
+          for(let k=0; k<this.rangeValue.length; k++) {
+            if(beginTime[k] <= stepTime && stepTime <= endTime[k] ) {
+              eval(`options.range${overlap.toString()}Selected = true`)
+              overlap++
+              currState.push(k)
+              if(this.lastOverlap[0] === -1) {
+                this.lastOverlap[0] = k
               }
-            } else {                                                                      // 평범한 날이거나
-                temp[line].push({day: i, disabled: false})
             }
           }
+          let sequence = false
+          console.log(this.lastOverlap, currState)
+          currState.forEach(element => {
+            for(let q=0; q<this.lastOverlap.length; q++) {
+              if(element === this.lastOverlap[q]) {
+                sequence = true
+              }
+            }
+          })
+          if(!sequence) {
+              this.lastOverlap = []
+          }
+          if(this.lastOverlap[0] !== -1) {
+            if(this.lastOverlap.length > overlap) {
+              for(let j=0; j<currState.length; j++) {
+                  num = currState[j] - this.lastOverlap[0]
+                  eval(`options.range${(overlap-1).toString()}Selected = false`)
+                  eval(`options.range${num.toString()}Selected = true`)
+              }
+            }
+
+            currState.forEach(element => {
+              if(this.lastOverlap.indexOf(element) === -1) {
+                this.lastOverlap.push(element)
+              }
+            })
+          }
+      }
+
+        for(let k = 0; k < seletSplit.length; k++) {
+          if(seletSplit[k][0] === y && seletSplit[k][1]-1 === m && seletSplit[k][2] === i) {   // 선택된 날들이거나
+            options.selected = true
+          }
+        }
+        if(this.today[0] === y && this.today[1]-1 === m && this.today[2] === i) {    // 오늘이거나
+          options.today = true
+        }
+        if(i == lastDateOfMonth && day != 6) {                                          // 이번달의 마지막이거나
+          let lastDay = new Date(y, m+1, 0).getDay()
+          let k = 1
+          temp[line].push(options)
+          for(let j = lastDay; j < 6; j++) {
+            options.disabled = true
+            temp[line].push(options)
+            k++
+          }
+        } else {                                                                      // 평범한 날이거나
+            temp[line].push(options)
         }
     }
     this.days = temp
@@ -230,4 +277,18 @@ export default {
 .selected {
   color: red;
 }
+.week-inner  {
+  text-align: center;
+}
+.table-data {
+  text-align: center;
+  height: 70px;
+}
+.schedule {
+  height: 10px;
+}
+.paint {
+  background-color: #BBDEFB;
+}
+
 </style>
