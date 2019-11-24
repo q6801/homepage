@@ -39,8 +39,8 @@
     <div class="">
       {{today}}
     </div>
-    <button type="button" name="button" class="btn btn-primary" @click="prev">왼쪽</button>
-    <button type="button" name="button" class="btn btn-primary" @click="next">오른쪽</button>
+    <button type="button" name="button" class="btn btn-primary" @click="prev">지난달</button>
+    <button type="button" name="button" class="btn btn-primary" @click="next">다음달</button>
   </div>
 </template>
 
@@ -299,7 +299,7 @@ export default {
   height: 70px;
 }
 .schedule {
-  height: 10px;
+  height: 15px;
 }
 .paint {
   background-color: #BBDEFB;
