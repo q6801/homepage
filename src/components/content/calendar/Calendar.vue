@@ -37,10 +37,9 @@
       </tbody>
     </table>
     <div class="">
-      {{today}}
+      <button class="btn btn-primary col-4 mr-5" type="button" name="button" @click="prev">지난달</button>
+      <button class="btn btn-primary col-4" type="button" name="button" @click="next">다음달</button>
     </div>
-    <button type="button" name="button" class="btn btn-primary" @click="prev">지난달</button>
-    <button type="button" name="button" class="btn btn-primary" @click="next">다음달</button>
   </div>
 </template>
 
@@ -107,9 +106,9 @@ export default {
       events(){
           this.render(this.year,this.month)
       },
-      // value(){
-      //     this.init()
-      // },
+      total(){
+          this.init()
+      },
 
   },
   mounted() {
@@ -117,6 +116,8 @@ export default {
   },
   methods: {
     init() {
+        this.rangeBegin = []
+        this.rangeEnd = []
         let now = new Date()
         this.year = now.getFullYear()
         this.month = now.getMonth()
@@ -144,26 +145,9 @@ export default {
             }
             ++i
         })
-
-        // if (this.value.length>0) {
-        //     if (this.range) {
-        //         this.value.forEach((value) => {
-        //           let year1 = parseInt(value[0][0])
-        //           let month1 = parseInt(value[0][1]) - 1 // 0이 1월
-        //           let day1 = parseInt(value[0][2])
-        //
-        //           let year2 = parseInt(value[1][0])
-        //           let month2 = parseInt(value[1][1]) - 1
-        //           let day2 = parseInt(value[1][2])
-        //
-        //           this.rangeBegin.push([year1, month1, day1])
-        //           this.rangeEnd.push([year2, month2 , day2])
-        //         })
-        //     }
-        //
-        // }
         this.render(this.year, this.month)
     },
+
     render(y, m) {
       let now = new Date();
       this.today = [now.getFullYear(), now.getMonth()+1, now.getDate()]
@@ -206,6 +190,9 @@ export default {
 
           for(let k=0; k<this.rangeBegin.length; k++) {
             if(beginTime[k] <= stepTime && stepTime <= endTime[k] ) {
+              if(beginTime[k] == stepTime) {
+                options.view = this.total[this.rangeBegin[k][3]].name
+              }
               eval(`options.range${overlap.toString()}Selected = true`)
               overlap++
               currState.push(k)

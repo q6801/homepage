@@ -55,7 +55,29 @@ export default new Vuex.Store({
       temp: {
         link:null,
         name:null
-      }
+      },
+      calendarValue: [
+          {
+            value: [[2019,10,22], [2019,10,30]],
+            name: '엨'
+          },
+          {
+            value: [2019,11,11],
+            name: '모모 생일'
+          },
+          {
+            value: [[2019,11,22], [2019,11,24]],
+            name: '뭐였드라'
+          },
+          {
+            value: [[2019,11,23], [2019,11,30]],
+            name: '그건가'
+          },
+          {
+            value: [2019,11,21],
+            name: '아이유 콘서트'
+          },
+      ]
   },
   mutations: {
     checkLink(state, payload) {
@@ -71,9 +93,53 @@ export default new Vuex.Store({
           eval(str);
         }
       }
+    },
+    addCalendarValue(state, payload) {
+      let i = 0
+      let value = []
+      if(payload.value.length !== 2) {
+        let date = payload.value.toString()
+        value = [parseInt(date.slice(0, 4)), parseInt(date.slice(4, 6)), parseInt(date.slice(6))]
+      } else {
+        for(let i = 0; i < 2; i++) {
+          let date = payload.value[i].toString()
+          value.push([parseInt(date.slice(0, 4)), parseInt(date.slice(4, 6)), parseInt(date.slice(6))])
+        }
+      }
+      payload.value = value
+      if(payload.value.length == 2) {
+        state.calendarValue.forEach(element => {
+            if(element.value.length == 2 && element.value[0].join() > payload.value.join()) {
+                state.calendarValue.splice(i, 0, payload)
+                return
+              }
+            i++
+        })
+      } else {
+        state.calendarValue.push(payload)
+        return
+      }
+      state.calendarValue.splice(i, 0, payload)
     }
   },
   actions: {
+    checkCalendarSequence({commit}, payload) {
+      let regex= /[0-9]{8}$/
+      if(payload.value.length == 2) {
+        if(regex.test(payload.value[0]) && regex.test(payload.value[1])) {
+            commit('addCalendarValue', payload)
+        } else {
+            alert("잘못된 날짜")
+        }
+      }
+      else {
+        if(regex.test(payload.value)) {
+            commit('addCalendarValue', payload)
+        } else {
+            alert("잘못된 날짜")
+        }
+      }
+    }
   },
   modules: {
   }
